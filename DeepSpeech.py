@@ -21,6 +21,7 @@ from six.moves import zip, range
 from tensorflow.contrib.lite.python import tflite_convert
 from tensorflow.python.tools import freeze_graph
 from util.audio import audiofile_to_input_vector
+from util.benchmark import BenchmarkHook
 from util.config import Config, initialize_globals
 from util.coordinator import TrainingCoordinator
 from util.feeding import DataSet, ModelFeeder
