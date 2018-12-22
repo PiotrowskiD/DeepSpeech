@@ -7,6 +7,11 @@ FLAGS = tf.app.flags.FLAGS
 
 
 def create_flags():
+    
+    # Benchmarking
+    tf.app.flags.DEFINE_integer ('benchmark_steps',               0, 'number of benchmark steps - if 0, normal training will be run')
+    tf.app.flags.DEFINE_integer ('benchmark_log_steps',           1, 'period of benchmark logging in steps - if 0, only final result will be displayed')
+    tf.app.flags.DEFINE_integer ('benchmark_warmup_steps',        1, 'number of warmup steps before benchmarking, works only if benchmark_steps > 0')
     # Importer
     # ========
 
