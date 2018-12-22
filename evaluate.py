@@ -124,7 +124,7 @@ def evaluate(test_data, inference_graph, alphabet):
         saver = tf.train.Saver(mapping)
 
         # Restore variables from training checkpoint
-        if and FLAGS.checkpoint_dir is not None:
+        if FLAGS.checkpoint_dir is not None:
             checkpoint = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
             if not checkpoint:
                 log_error('Checkpoint directory ({}) does not contain a valid checkpoint state.'.format(FLAGS.checkpoint_dir))
