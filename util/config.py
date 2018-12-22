@@ -68,6 +68,9 @@ def initialize_globals():
     if len(FLAGS.checkpoint_dir) == 0:
         FLAGS.checkpoint_dir = xdg.save_data_path(os.path.join('deepspeech','checkpoints'))
 
+    if FLAGS.benchmark_steps > 0:
+        FLAGS.checkpoint_dir = None
+
     # Set default summary dir
     if len(FLAGS.summary_dir) == 0:
         FLAGS.summary_dir = xdg.save_data_path(os.path.join('deepspeech','summaries'))
