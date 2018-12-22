@@ -489,7 +489,7 @@ def train(server=None):
 
     if FLAGS.benchmark_steps > 0:
         chief_only_hooks.append(BenchmarkHook(FLAGS.benchmark_steps, FLAGS.benchmark_warmup_steps,
-                                              FLAGS.benchmark_log_steps, global_step, len(available_devices) *
+                                              FLAGS.benchmark_log_steps, global_step, len(Config.available_devices) *
                                               max(1, FLAGS.replicas_to_agg) * FLAGS.train_batch_size))
     
     no_dropout_feed_dict = {
