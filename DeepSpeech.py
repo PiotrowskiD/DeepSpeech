@@ -477,14 +477,21 @@ def train(server=None):
         hooks.append(optimizer.make_session_run_hook(Config.is_chief))
 
     # Hook to save TensorBoard summaries
-    if FLAGS.summary_secs > 0:
+    if FLAGS.summary_secs > 0 and FLAGS.benchmark_steps == 0:
         hooks.append(tf.train.SummarySaverHook(save_secs=FLAGS.summary_secs, output_dir=FLAGS.summary_dir, summary_op=merge_all_summaries_op))
 
     # Hook wih number of checkpoint files to save in checkpoint_dir
-    if FLAGS.train and FLAGS.max_to_keep > 0:
+    if FLAGS.train and FLAGS.max_to_keep > 0 and FLAGS.checkpoint_dir is not None:
         saver = tf.train.Saver(max_to_keep=FLAGS.max_to_keep)
         hooks.append(tf.train.CheckpointSaverHook(checkpoint_dir=FLAGS.checkpoint_dir, save_secs=FLAGS.checkpoint_secs, saver=saver))
+    
+    chief_only_hooks = []
 
+    if FLAGS.benchmark_steps > 0:
+        chief_only_hooks.append(BenchmarkHook(FLAGS.benchmark_steps, FLAGS.benchmark_warmup_steps,
+                                              FLAGS.benchmark_log_steps, global_step, len(available_devices) *
+                                              max(1, FLAGS.replicas_to_agg) * FLAGS.train_batch_size))
+    
     no_dropout_feed_dict = {
         dropout_rates[0]: 0.,
         dropout_rates[1]: 0.,
@@ -539,6 +546,7 @@ def train(server=None):
         with tf.train.MonitoredTrainingSession(master='' if server is None else server.target,
                                                is_chief=Config.is_chief,
                                                hooks=hooks,
+                                               chief_only_hooks=chief_only_hooks,
                                                checkpoint_dir=FLAGS.checkpoint_dir,
                                                save_checkpoint_secs=None, # already taken care of by a hook
                                                log_step_count_steps=0, # disable logging of steps/s to avoid TF warning in validation sets
@@ -643,7 +651,7 @@ def train(server=None):
         sys.exit(1)
 
     # Stopping the coordinator
-    coord.stop()
+    coord.stop(wait_for_running_epochs=(FLAGS.benchmark_steps == 0))
 
 
 def test():
